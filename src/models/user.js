@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Order);
+      User.hasMany(models.Code);
+      User.hasMany(models.Comment);
       // User.hasOne(models.Cart);
       User.belongsToMany(models.Product, { through: "CartItem" });
     }
@@ -29,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       phone: DataTypes.STRING,
       password: DataTypes.STRING,
       refresh_token: DataTypes.STRING,
+      point: DataTypes.INTEGER,
     },
     {
       sequelize,

@@ -1,7 +1,9 @@
 import createToken from "../middleware/createToken";
 import db from "../models";
 const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
-
+import dotenv from "dotenv";
+dotenv.config();
+import nodemailer from "nodemailer";
 export const handleGetAllUser = async () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -154,6 +156,43 @@ export const handleChangePassword = async (data) => {
   });
 };
 
+export const handleResetPassword = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const fields = ["email", "password_new"];
+      fields.forEach((item) => {
+        if (!data[item]) {
+          resolve(`${item} is not null`);
+        }
+      });
+
+      const res = await db.User.update(
+        { password: data.password_new },
+        {
+          where: {
+            email: data.email,
+          },
+          attributes: { exclude: ["password", "refresh_token"] },
+
+          subQuery: false,
+          raw: true,
+          nest: true,
+        }
+      );
+      if (res[0] !== 1) {
+        resolve("Change password is fail");
+      }
+
+      resolve({
+        results: "Change password is success",
+      });
+    } catch (e) {
+      resolve("Sever is error");
+      reject(e);
+    }
+  });
+};
+
 export const handleLoginUser = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -172,7 +211,11 @@ export const handleLoginUser = async (data) => {
       });
 
       if (user) {
-        let token = createToken({ user_id: user.user_id, name: user.name });
+        let token = createToken({
+          user_id: user.user_id,
+          name: user.name,
+          point: user.point,
+        });
         let refresh_token = uuidv4();
         await db.User.update(
           { refresh_token: refresh_token },
@@ -225,7 +268,7 @@ export const handleRegisterUser = (data) => {
           if (userByPhone) {
             resolve("phone is exsist");
           } else {
-            await db.User.create({ ...data, user_id: uuidv4() });
+            await db.User.create({ ...data, user_id: uuidv4(), point: 100 });
             resolve({
               results: {
                 status: "success",
@@ -234,33 +277,6 @@ export const handleRegisterUser = (data) => {
           }
         }
       }
-
-      // if (!user) {
-      //   await db.User.create(data);
-      //   resolve({
-      //     results: {
-      //       status: "success",
-      //     },
-      //   });
-      // }
-      //  else if (user) {
-      //   resolve("email is exsist");
-      // } else {
-      //   let userByPhone = await db.User.findOne({
-      //     where: {
-      //       phone: data.phone,
-      //     },
-      //     attributes: { exclude: ["password"] },
-      //     raw: true,
-      //     nest: true,
-      //     // include: [
-      //     //   {
-      //     //     model: db.Group,
-      //     //     attributes: ["name", "description"],
-      //     //   },
-      //     // ],
-      //   });
-      // }
     } catch (e) {
       reject(e);
     }
@@ -302,5 +318,48 @@ export const handleRefreshToken = (data) => {
         }
       }
     } catch (e) {}
+  });
+};
+
+export const handleSendMail = async (option) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!option.email) {
+        resolve("Email is not null!");
+      }
+      const user = await db.User.findOne({
+        where: {
+          email: option.email,
+        },
+      });
+
+      if (!user || Object.keys(user).length === 0) {
+        resolve("Your are not registered!");
+      }
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "quankun0978@gmail.com",
+          pass: "kihf jegs xrwd momk",
+        },
+      });
+      const mailOption = {
+        from: "quankun0978@gmail.com",
+        to: option.email,
+        subject: option.subject,
+        html: option.message,
+      };
+      await transporter.sendMail(mailOption, (err, info) => {
+        if (err) {
+          reject(err);
+        }
+        resolve({
+          results: info,
+        });
+      });
+    } catch (err) {
+      reject(err);
+    }
   });
 };

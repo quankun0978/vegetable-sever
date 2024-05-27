@@ -1,7 +1,10 @@
 "use strict";
+const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
+
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
-  class Order extends Model {
+  class News extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,26 +12,24 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Order.belongsTo(models.User);
-      Order.belongsToMany(models.Product, { through: "OrderItem" });
     }
   }
-  Order.init(
+  News.init(
     {
-      UserUserId: DataTypes.UUID,
-      order_id: {
+      news_id: {
         type: DataTypes.UUID,
         primaryKey: true,
       },
-      total: DataTypes.DOUBLE,
-      status: DataTypes.STRING,
-      payment_id: DataTypes.STRING,
-      address: DataTypes.TEXT,
+      type_new: DataTypes.STRING,
+      title: DataTypes.TEXT,
+      content: DataTypes.TEXT,
+      description: DataTypes.TEXT,
+      imgPath: DataTypes.TEXT,
     },
     {
       sequelize,
-      modelName: "Order",
+      modelName: "News",
     }
   );
-  return Order;
+  return News;
 };

@@ -5,10 +5,9 @@ import {
 export const getAllProduct = async (req, res) => {
   try {
     const dt = await handleGetAllProduct();
-    // console.log("Cookies: ", req.cookies);
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };
 export const getProductById = async (req, res) => {
@@ -17,6 +16,6 @@ export const getProductById = async (req, res) => {
     // console.log("Cookies: ", req.cookies);
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };

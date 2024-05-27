@@ -1,32 +1,30 @@
 "use strict";
+const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Products", {
-      product_id: {
+    await queryInterface.createTable("Orders", {
+      order_id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
-        defaultValue: () => uuidv4(), // Sinh chuỗi UUID tự động
+        defaultValue: uuidv4(), //
       },
-      name: {
-        type: Sequelize.STRING,
+      UserUserId: {
+        type: Sequelize.UUID,
       },
-      price: {
+      total: {
         type: Sequelize.DOUBLE,
       },
-      category: {
+      address: {
+        type: Sequelize.TEXT,
+      },
+      status: {
         type: Sequelize.STRING,
       },
-
-      countBuy: {
-        type: Sequelize.BIGINT,
-      },
-      description: {
-        type: Sequelize.TEXT,
-      },
-      imgPath: {
-        type: Sequelize.TEXT,
+      payment_id: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -39,6 +37,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Products");
+    await queryInterface.dropTable("Orders");
   },
 };

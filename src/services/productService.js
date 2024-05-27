@@ -1,4 +1,3 @@
-import createToken from "../middleware/createToken";
 import db from "../models";
 const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
 
@@ -29,11 +28,6 @@ export const handleGetAllProduct = async () => {
         },
       });
     } catch (e) {
-      //   resolve({
-      //     results: {
-      //       data: [],
-      //     },
-      //   });
       reject(e);
     }
   });

@@ -12,7 +12,7 @@ export const getListCart = async (req, res) => {
     // console.log("Cookies: ", req.cookies);
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };
 export const getCartByUserId = async (req, res) => {
@@ -21,7 +21,7 @@ export const getCartByUserId = async (req, res) => {
     // console.log("Cookies: ", req.cookies);
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };
 
@@ -31,7 +31,7 @@ export const getListCartItem = async (req, res) => {
     // console.log("Cookies: ", req.cookies);
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };
 
@@ -45,7 +45,7 @@ export const addItemToCart = async (req, res) => {
     }
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };
 export const deleteItemToCart = async (req, res) => {
@@ -58,6 +58,6 @@ export const deleteItemToCart = async (req, res) => {
     }
     return res.status(200).json(dt);
   } catch {
-    // return res.status(500).json({ message: "sever is error ", errcode: 500 });
+    return res.status(500).json("sever is error");
   }
 };

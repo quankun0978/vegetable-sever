@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Product.hasMany(models.Comment);
       Product.belongsToMany(models.Cart, { through: "CartItem" });
       Product.belongsToMany(models.Order, { through: "OrderItem" });
     }
@@ -21,12 +22,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       name: DataTypes.STRING,
       price: DataTypes.DOUBLE,
+      price_sale: DataTypes.DOUBLE,
       category: DataTypes.STRING,
       countBuy: DataTypes.BIGINT,
       description: DataTypes.TEXT,
       imgPath: DataTypes.TEXT,
     },
-    {
+    { 
       sequelize,
       modelName: "Product",
     }

@@ -3,30 +3,19 @@ const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Users", {
-      user_id: {
+    await queryInterface.createTable("Vouchers", {
+      voucher_id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: uuidv4(), // Sinh chuỗi UUID tự động
       },
-      name: {
-        type: Sequelize.STRING,
+
+      discount: {
+        type: Sequelize.DOUBLE,
       },
-      address: {
-        type: Sequelize.STRING,
-      },
-      email: {
-        type: Sequelize.STRING,
-      },
-      phone: {
-        type: Sequelize.STRING,
-      },
-      password: {
-        type: Sequelize.STRING,
-      },
-      refresh_token: {
-        type: Sequelize.STRING,
+      point: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -39,6 +28,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("Vouchers");
   },
 };

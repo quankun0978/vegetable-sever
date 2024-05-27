@@ -79,7 +79,7 @@ export const handleGetListCartItem = async (user_id) => {
         include: [
           {
             model: db.Product,
-            attributes: ["imgPath", "name", "price"],
+            attributes: ["imgPath", "name", "price","price_sale"],
           },
         ],
         attributes: { exclude: ["updatedAt", "createdAt", "UserUserId"] },
