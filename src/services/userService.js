@@ -8,12 +8,6 @@ export const handleGetAllUser = async () => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await db.User.findAll({
-        // include: [
-        //   {
-        //     model: db.Group,
-        //   },
-        // ],
-        // attributes: { exclude: ["password"] },
         subQuery: false,
         raw: true,
         nest: true,
@@ -27,7 +21,6 @@ export const handleGetAllUser = async () => {
         },
       });
     } catch (e) {
-      console.log(e);
       resolve({
         results: {
           message: "FAIL",
@@ -72,7 +65,6 @@ export const handleGetUserById = async (data) => {
 export const handleUpdateUserById = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(data);
       if ((!data && Object.keys(data).length === 0) || !data.user_id) {
         resolve("user_id is not null");
       }

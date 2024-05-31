@@ -1,5 +1,4 @@
 import db from "../models";
-const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
 
 export const handleGetListCart = async () => {
   return new Promise(async (resolve, reject) => {
@@ -42,7 +41,7 @@ export const handleGetCartByUserId = async (user_id) => {
       }
       const res = await db.Cart.findOne({
         where: {
-          UserUserId: user_id,
+          user_id: user_id,
         },
         include: [
           {
@@ -74,15 +73,16 @@ export const handleGetListCartItem = async (user_id) => {
       if (!user_id) resolve("user_id is not null");
       const res = await db.CartItem.findAll({
         where: {
-          UserUserId: user_id,
+          user_id: user_id,
         },
         include: [
           {
             model: db.Product,
-            attributes: ["imgPath", "name", "price","price_sale"],
+            as: "productCart",
+            attributes: ["imgPath", "name", "price", "price_sale"],
           },
         ],
-        attributes: { exclude: ["updatedAt", "createdAt", "UserUserId"] },
+        attributes: { exclude: ["updatedAt", "createdAt", "user_id"] },
 
         subQuery: false,
         raw: true,
@@ -97,7 +97,6 @@ export const handleGetListCartItem = async (user_id) => {
         results: [],
       });
     } catch (e) {
-      console.log(e);
       reject(e);
     }
   });
@@ -107,7 +106,7 @@ export const handleAddItemToCart = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let isCheck = true;
-      const fields = ["UserUserId", "ProductProductId", "quantity", "total"];
+      const fields = ["user_id", "product_id", "quantity", "total"];
       fields.forEach((item) => {
         if (!data[item]) {
           resolve(`${item} is not null`);
@@ -117,16 +116,15 @@ export const handleAddItemToCart = async (data) => {
       if (isCheck) {
         const cartItem = await db.CartItem.findOne({
           where: {
-            ProductProductId: data.ProductProductId,
+            product_id: data.product_id,
           },
         });
         if (cartItem) {
           const res = await db.CartItem.update(data, {
             where: {
-              ProductProductId: data.ProductProductId,
+              product_id: data.product_id,
             },
           });
-          console.log(res);
           if (res && res.length === 0) {
             resolve("CartItem is not essits");
           }
@@ -158,7 +156,7 @@ export const handleDeleteItemToCart = async (product_id) => {
       } else {
         const res = await db.CartItem.destroy({
           where: {
-            ProductProductId: product_id,
+            product_id: product_id,
           },
         });
         if (res !== 1) {

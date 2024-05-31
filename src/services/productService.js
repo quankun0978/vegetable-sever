@@ -1,25 +1,22 @@
 import db from "../models";
-const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
 
 export const handleGetAllProduct = async () => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await db.Product.findAll({
-        // include: [
-        //   {
-        //     model: db.Group,
-        //   },
-        // ],
-        // attributes: { exclude: ["password"] },
+        include: [
+          {
+            model: db.Allcodes,
+            as: "categoryData",
+          },
+        ],
         subQuery: false,
         raw: true,
         nest: true,
       });
       if (res && res.length > 0) {
         resolve({
-          results: {
-            data: res,
-          },
+          results: res,
         });
       }
       resolve({
@@ -43,15 +40,19 @@ export const handleGetProductById = async (product_id) => {
         where: {
           product_id,
         },
+        include: [
+          {
+            model: db.Allcodes,
+            as: "categoryData",
+          },
+        ],
         subQuery: false,
         raw: true,
         nest: true,
       });
       if (res) {
         resolve({
-          results: {
-            data: res,
-          },
+          results: res,
         });
       }
       resolve("Product does not exist");

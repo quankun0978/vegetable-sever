@@ -1,5 +1,4 @@
 import db from "../models";
-const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
 
 export const handleGetDataAllCode = async () => {
   return new Promise(async (resolve, reject) => {

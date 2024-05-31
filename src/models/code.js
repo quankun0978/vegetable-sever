@@ -9,8 +9,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Code.belongsTo(models.User);
-      Code.belongsTo(models.Voucher);
+      Code.belongsTo(models.User, {
+        foreignKey: "user_id",
+        targetKey: "user_id",
+        as: "userData",
+      });
+      Code.belongsTo(models.Voucher, {
+        foreignKey: "voucher_id",
+        targetKey: "voucher_id",
+        as: "voucherData",
+      });
     }
   }
   Code.init(
@@ -19,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         primaryKey: true,
       },
-      UserUserId: DataTypes.UUID,
-      VoucherVoucherId: DataTypes.UUID,
+      user_id: DataTypes.UUID,
+      voucher_id: DataTypes.UUID,
     },
     {
       sequelize,

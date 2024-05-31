@@ -5,12 +5,13 @@ export const handleGetCommentByProductId = async (product_id) => {
       if (!product_id) resolve("Product id is not null");
       const res = await db.Comment.findAll({
         where: {
-          ProductProductId: product_id,
+          product_id: product_id,
         },
         include: [
           {
             model: db.User,
             attributes: ["name"],
+            as: "userData",
           },
         ],
         attributes: { exclude: ["updatedAt", "createdAt"] },
@@ -28,7 +29,6 @@ export const handleGetCommentByProductId = async (product_id) => {
         results: [],
       });
     } catch (e) {
-      console.log(e);
       reject(e);
     }
   });
@@ -48,8 +48,8 @@ export const handlePostComment = async (data) => {
       if (isCheck) {
         const res = await db.Comment.create({
           ...data,
-          ProductProductId: data.product_id,
-          UserUserId: data.user_id,
+          product_id: data.product_id,
+          user_id: data.user_id,
         });
         if (!res) {
           resolve("create is fail");

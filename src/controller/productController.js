@@ -13,7 +13,6 @@ export const getAllProduct = async (req, res) => {
 export const getProductById = async (req, res) => {
   try {
     const dt = await handleGetProductById(req.body.id);
-    // console.log("Cookies: ", req.cookies);
     return res.status(200).json(dt);
   } catch {
     return res.status(500).json("sever is error");

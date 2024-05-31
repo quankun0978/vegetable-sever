@@ -19,7 +19,6 @@ export const getListNews = async (req, res) => {
 export const getListNewsById = async (req, res) => {
   try {
     const dt = await handleGetNewsByNewsId(req.body.news_id);
-    // console.log("Cookies: ", req.cookies);
     if (dt && !dt.results) {
       return res.status(400).json(dt);
     }
@@ -32,7 +31,6 @@ export const getListNewsById = async (req, res) => {
 export const addNews = async (req, res) => {
   try {
     const dt = await handleAddNews();
-    // console.log("Cookies: ", req.cookies);
     if (dt && !dt.results) {
       return res.status(400).json(dt);
     }

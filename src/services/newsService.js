@@ -8,7 +8,6 @@ export const handleGetListNews = async () => {
         subQuery: false,
         raw: true,
         nest: true,
-        // attributes: ["voucher_id", "discount", "point"],
       });
       if (res && res.length > 0) {
         resolve({

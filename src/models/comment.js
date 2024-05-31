@@ -9,14 +9,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-        Comment.belongsTo(models.User);
-        Comment.belongsTo(models.Product);
+      Comment.belongsTo(models.User, {
+        foreignKey: "user_id",
+        targetKey: "user_id",
+        as: "userData",
+      });
+      Comment.belongsTo(models.Product, {
+        foreignKey: "product_id",
+        targetKey: "product_id",
+        as: "productData",
+      });
     }
   }
   Comment.init(
     {
-      UserUserId: DataTypes.UUID,
-      ProductProductId: DataTypes.UUID,
+      user_id: DataTypes.UUID,
+      product_id: DataTypes.UUID,
       content: DataTypes.TEXT,
       rate: DataTypes.INTEGER,
     },

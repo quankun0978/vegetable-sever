@@ -9,7 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Voucher.hasMany(models.Code);
+      Voucher.hasOne(models.Code, {
+        foreignKey: "voucher_id",
+        as: "voucherData",
+      });
+      Voucher.belongsTo(models.Allcodes, {
+        foreignKey: "voucher_id",
+        targetKey: "value",
+        as: "voucherAllcodes",
+      });
     }
   }
   Voucher.init(

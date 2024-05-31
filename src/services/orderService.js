@@ -1,4 +1,6 @@
 import db from "../models";
+import dotenv from "dotenv";
+dotenv.config();
 const { v4: uuidv4 } = require("uuid"); // Thêm module uuid
 
 import axios from "axios";
@@ -17,13 +19,18 @@ export const handleGetOrderByUserId = async (user_id) => {
       }
       const res = await db.Order.findAll({
         where: {
-          UserUserId: user_id,
+          user_id: user_id,
         },
-        // include: [
-        //   {
-        //     model: db.CartItem,
-        //   },
-        // ],
+        include: [
+          {
+            model: db.Allcodes,
+            as: "paymentData",
+          },
+          {
+            model: db.Allcodes,
+            as: "statusData",
+          },
+        ],
         subQuery: false,
         raw: true,
         nest: true,
@@ -35,7 +42,6 @@ export const handleGetOrderByUserId = async (user_id) => {
         results: res,
       });
     } catch (e) {
-      console.log(e);
       reject(e);
     }
   });
@@ -67,7 +73,7 @@ export const handleCreateOrder = async (data, option) => {
       if (isCheck) {
         const res = await db.Order.create({
           ...data,
-          UserUserId: data.user_id,
+          user_id: data.user_id,
           order_id: uuidv4(),
         });
         if (!res) {
@@ -76,8 +82,8 @@ export const handleCreateOrder = async (data, option) => {
         const dt = data.listItem.map((item) => {
           return {
             ...item,
-            ProductProductId: item.product_id,
-            OrderOrderId: res.order_id,
+            product_id: item.product_id,
+            order_id: res.order_id,
           };
         });
         const result = await db.OrderItem.bulkCreate(dt);
@@ -87,7 +93,7 @@ export const handleCreateOrder = async (data, option) => {
         }
         const resultDelete = await db.CartItem.destroy({
           where: {
-            UserUserId: data.user_id,
+            user_id: data.user_id,
           },
         });
         if (resultDelete < 1) {
@@ -101,7 +107,7 @@ export const handleCreateOrder = async (data, option) => {
           },
         });
         const mailOption = {
-          from: "quankun0978@gmail.com",
+          from: process.env.EMAIL_ID,
           to: data.email,
           subject: option.subject,
           html: option.message,
@@ -116,15 +122,14 @@ export const handleCreateOrder = async (data, option) => {
             resolve("Code is not essits");
           }
         }
-        const resultUpdate = await handleUpdateUserById({
-          user_id: data.user_id,
-          point: data.point + handleCountPoint(data.total),
-        });
-
-        if (resultUpdate && !resultUpdate.results) {
-          resolve({
-            results: "error add point",
+        if (data.status === "done") {
+          const resultUpdate = await handleUpdateUserById({
+            user_id: data.user_id,
+            point: data.point + handleCountPoint(data.total),
           });
+          if (resultUpdate && !resultUpdate.results) {
+            resolve("error add point");
+          }
         }
 
         await transporter.sendMail(mailOption, (err, info) => {
@@ -136,9 +141,11 @@ export const handleCreateOrder = async (data, option) => {
             results: "create is success",
           });
         });
+        resolve({
+          results: "please payment",
+        });
       }
     } catch (e) {
-      console.log(e);
       reject(e);
     }
   });
@@ -150,15 +157,16 @@ export const handleGetListOrderItem = async (order_id) => {
       if (!order_id) resolve("order_id is not null");
       const res = await db.OrderItem.findAll({
         where: {
-          OrderOrderId: order_id,
+          order_id: order_id,
         },
         include: [
           {
             model: db.Product,
+            as: "productOrder",
             attributes: ["imgPath", "name", "price"],
           },
         ],
-        attributes: { exclude: ["updatedAt", "createdAt", "OrderOrderId"] },
+        attributes: { exclude: ["updatedAt", "createdAt", "order_id"] },
 
         subQuery: false,
         raw: true,
@@ -173,7 +181,6 @@ export const handleGetListOrderItem = async (order_id) => {
         results: [],
       });
     } catch (e) {
-      console.log(e);
       reject(e);
     }
   });
@@ -183,17 +190,18 @@ export const handlePaymentZaloPay = async (payload) => {
   return new Promise(async (resolve, reject) => {
     try {
       const config = {
-        app_id: "2554",
-        key1: "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn",
-        key2: "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf",
-        endpoint: "https://sb-openapi.zalopay.vn/v2/create",
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1,
+        key2: process.env.KEY2,
+        endpoint: process.env.END_POINT,
       };
 
       const embed_data = {
-        redirecturl: "http://localhost:5173/",
+        redirecturl: process.env.URL_FE,
         email: payload.email,
         address: payload.address,
-        payment_id: payload.address,
+        payment_id: payload.payment_id,
+        point: `${payload.point} `,
       };
       const transID = Math.floor(Math.random() * 1000000);
       const order = {
@@ -205,8 +213,7 @@ export const handlePaymentZaloPay = async (payload) => {
         embed_data: JSON.stringify(embed_data),
         amount: payload.total,
         description: `TopWeb - Thanh toán hóa đơn #${transID}`,
-        callback_url:
-          "https://fd5e-2405-4802-1c89-3240-b578-2359-f9e7-c20c.ngrok-free.app/callback",
+        callback_url: "192.168.1.122/callback",
       };
 
       // appid|app_trans_id|appuser|amount|apptime|embeddata|item
@@ -240,7 +247,7 @@ export const handleCallbackPayment = (data, dataMac) => {
   return new Promise(async (resolve, reject) => {
     // let result = {};
     const config = {
-      key2: "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf",
+      key2: process.env.KEY2,
     };
 
     try {
@@ -259,6 +266,7 @@ export const handleCallbackPayment = (data, dataMac) => {
           listItem: JSON.parse(dataJson.item),
           email: JSON.parse(dataJson.embed_data).email,
           address: JSON.parse(dataJson.embed_data).address,
+          point: +JSON.parse(dataJson.embed_data).point,
         };
         const mailOption = {
           subject: "Payment Link",

@@ -10,10 +10,10 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: uuidv4(), // Sinh chuỗi UUID tự động
       },
-      UserUserId: {
+      user_id: {
         type: Sequelize.UUID,
       },
-      VoucherVoucherId: {
+      voucher_id: {
         type: Sequelize.UUID,
       },
 

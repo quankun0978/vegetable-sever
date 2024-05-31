@@ -9,9 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Product.hasMany(models.Comment);
-      Product.belongsToMany(models.Cart, { through: "CartItem" });
-      Product.belongsToMany(models.Order, { through: "OrderItem" });
+      Product.hasMany(models.Comment, { foreignKey: "product_id" });
+      Product.belongsTo(models.Allcodes, {
+        foreignKey: "category",
+        targetKey: "value",
+        as: "categoryData",
+      });
+      Product.belongsToMany(models.User, { through: "CartItem" ,foreignKey:"product_id",as:"productCart"});
+
+      // Product.belongsToMany(models.OrderItem, { through: "Order" ,foreignKey:"product_id",as:"productOrder"});
     }
   }
   Product.init(
@@ -28,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.TEXT,
       imgPath: DataTypes.TEXT,
     },
-    { 
+    {
       sequelize,
       modelName: "Product",
     }

@@ -18,7 +18,6 @@ export const getCommentByProductId = async (req, res) => {
 export const postComment = async (req, res) => {
   try {
     const dt = await handlePostComment(req.body);
-    // console.log("Cookies: ", req.cookies);
     if (dt && !dt.results) {
       return res.status(400).json(dt);
     }

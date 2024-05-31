@@ -9,11 +9,12 @@ export const handleGetListMyVoucher = async (user_id) => {
       }
       const res = await db.Code.findAll({
         where: {
-          UserUserId: user_id,
+          user_id: user_id,
         },
         include: [
           {
             model: db.Voucher,
+            as: "voucherData",
           },
         ],
 
@@ -42,6 +43,12 @@ export const handleGetListVoucher = async () => {
         raw: true,
         nest: true,
         attributes: ["voucher_id", "discount", "point"],
+        include: [
+          {
+            model: db.Allcodes,
+            as: "voucherAllcodes",
+          },
+        ],
       });
       if (res && res.length > 0) {
         resolve({
@@ -70,8 +77,8 @@ export const handleAddMyVoucher = async (data) => {
       });
       if (isCheck) {
         const res = await db.Code.create({
-          UserUserId: data.user_id,
-          VoucherVoucherId: data.Voucher_id,
+          user_id: data.user_id,
+          voucher_id: data.voucher_id,
           code_id: uuidv4(),
         });
         if (!res) {

@@ -11,7 +11,7 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: uuidv4(), //
       },
-      UserUserId: {
+      user_id: {
         type: Sequelize.UUID,
       },
       total: {

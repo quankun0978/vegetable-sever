@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Allcodes extends Model {
     /**
@@ -11,15 +9,33 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Allcodes.hasOne(models.Product, {
+        foreignKey: "category",
+        as: "categoryData",
+      });
+      Allcodes.hasOne(models.Order, {
+        foreignKey: "payment_id",
+        as: "paymentData",
+      });
+      Allcodes.hasOne(models.Voucher, {
+        foreignKey: "voucher_id",
+        as: "voucherAllcodes",
+      });
     }
   }
-  Allcodes.init({
-    type: DataTypes.STRING,
-    value: DataTypes.STRING,
-    label: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Allcodes',
-  });
+  Allcodes.init(
+    {
+      type: DataTypes.STRING,
+      value: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+      },
+      label: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "Allcodes",
+    }
+  );
   return Allcodes;
 };

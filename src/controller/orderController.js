@@ -25,7 +25,6 @@ export const createOrder = async (req, res) => {
       ),
     };
     const dt = await handleCreateOrder(req.body, mailOption);
-    console.log(1);
 
     if (dt && !dt.results) {
       return res.status(400).json(dt);
@@ -59,7 +58,6 @@ export const paymentZaloPay = async (req, res) => {
 
 export const callbackPayment = async (req, res) => {
   try {
-    console.log(2)
     const dt = await handleCallbackPayment(req.body.data, req.body.mac);
     if (dt && !dt.results) {
       return res.status(400).json(dt);
