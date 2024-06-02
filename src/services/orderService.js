@@ -213,7 +213,7 @@ export const handlePaymentZaloPay = async (payload) => {
         embed_data: JSON.stringify(embed_data),
         amount: payload.total,
         description: `TopWeb - Thanh toán hóa đơn #${transID}`,
-        callback_url: "192.168.1.122/callback",
+        callback_url: "https://a736-113-191-41-5.ngrok-free.app/callback",
       };
 
       // appid|app_trans_id|appuser|amount|apptime|embeddata|item
